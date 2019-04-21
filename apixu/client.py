@@ -17,14 +17,17 @@ class ApixuException(Exception):
 
 
 class ApixuClient:
-    def __init__(self, api_key=None, api_url=API_URL):
+    def __init__(self, api_key=None, api_url=API_URL, lang=None):
         self.api_key = api_key
         self.api_url = api_url.rstrip('/')
+        self.lang = lang
 
     def _get(self, url, args=None):
         new_args = {}
         if self.api_key:
             new_args['key'] = self.api_key
+        if self.lang:
+            new_args['lang'] = self.lang
         new_args.update(args or {})
         response = requests.get(url, params=new_args, timeout=HTTP_TIMEOUT)
         res = response.json()
@@ -43,13 +46,11 @@ class ApixuClient:
 
         return self._get(url)
 
-    def current(self, q=None, lang=None):
+    def current(self, q=None):
         url = self._url('current')
         args = {}
         if q:
             args['q'] = q
-        if lang:
-            args['lang'] = lang
 
         return self._get(url, args)
 
